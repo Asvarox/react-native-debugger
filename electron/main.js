@@ -4,6 +4,7 @@ import installExtensions from './extensions';
 import { checkWindowInfo, createWindow } from './window';
 import { startListeningHandleURL } from './url-handle';
 import { createMenuTemplate } from './menu';
+import { readConfig } from './config';
 import { sendSyncState } from './sync-state';
 
 const iconPath = path.resolve(__dirname, 'logo.png');
@@ -66,7 +67,16 @@ if (process.platform === 'darwin') {
 app.on('ready', async () => {
   await installExtensions();
 
-  createWindow(defaultOptions);
+  const { config } = readConfig();
+
+  let { defaultRNPackagerPorts } = config;
+  if (!Array.isArray(defaultRNPackagerPorts)) {
+    defaultRNPackagerPorts = [8081];
+  }
+
+  defaultRNPackagerPorts.forEach(port => {
+    createWindow({ port, ...defaultOptions });
+  });
 
   const menuTemplate = createMenuTemplate(defaultOptions);
   const menu = Menu.buildFromTemplate(menuTemplate);
@@ -74,6 +84,7 @@ app.on('ready', async () => {
 
   const replaceHeaderPrefix = '__RN_DEBUGGER_SET_HEADER_REQUEST_';
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    delete details.requestHeaders.Origin;
     Object.entries(details.requestHeaders).forEach(([header, value]) => {
       if (header.startsWith(replaceHeaderPrefix)) {
         const originalHeader = header.replace(replaceHeaderPrefix, '');

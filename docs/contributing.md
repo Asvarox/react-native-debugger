@@ -15,13 +15,14 @@ $ cd npm-package && yarn && cd ..
 If you want to debug the [NPM package](../npm-package), just run `npm link <the package path>` on your React Native project.
 
 ### Run on development mode
+_Please ensure the `React Native Debugger` production / distribution app is closed._
 
 ```bash
 $ yarn dev:webpack  # Then open the another terminal tab
 $ yarn dev:electron
 ```
-
-Please ensure the `React Native Debugger` production app is closed.
+1. From here, you can open a react-native project with remote debugging enabled. 
+1. To see the development build of the react-native-debugger, do x,y,z
 
 ### Run on production mode
 
@@ -78,11 +79,13 @@ Thank you to all our sponsors! (please ask your company to also support this ope
 
 ## Other documentations
 
-* [Getting Started](getting-started.md)
-* [Debugger Integration](debugger-integration.md)
-* [React DevTools Integration](react-devtools-integration.md)
-* [Redux DevTools Integration](redux-devtools-integration.md)
-* [Shortcut references](shortcut-references.md)
-* [Network inspect of Chrome Developer Tools](network-inspect-of-chrome-devtools.md)
-* [Enable open in editor in console](enable-open-in-editor-in-console.md)
-* [Troubleshooting](troubleshooting.md)
+- [Getting Started](getting-started.md)
+- [Debugger Integration](debugger-integration.md)
+- [React DevTools Integration](react-devtools-integration.md)
+- [Redux DevTools Integration](redux-devtools-integration.md)
+- [Apollo Client DevTools Integration](apollo-client-devtools-integration.md)
+- [Shortcut references](shortcut-references.md)
+- [Network inspect of Chrome Developer Tools](network-inspect-of-chrome-devtools.md)
+- [Enable open in editor in console](enable-open-in-editor-in-console.md)
+- [Config file in home directory](config-file-in-home-directory.md)
+- [Troubleshooting](troubleshooting.md)

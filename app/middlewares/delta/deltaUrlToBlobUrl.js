@@ -16,27 +16,31 @@ const cachedBundleUrls = new Map();
 export default async function deltaUrlToBlobUrl(deltaUrl) {
   const client = DeltaPatcher.get(deltaUrl);
 
-  const deltaBundleId = client.getLastBundleId()
-    ? `&deltaBundleId=${client.getLastBundleId()}`
-    : '';
+  const isLegacy = client.isLegacy();
+  let query = '';
+  if (isLegacy !== undefined && isLegacy) {
+    const lastBundleId = client.getLastRevisionId();
+    query = lastBundleId
+      ? `${deltaUrl.indexOf('?') === -1 ? '?' : '&'}deltaBundleId=${lastBundleId}`
+      : '';
+  } else if (isLegacy !== undefined) {
+    const lastRevisionId = client.getLastRevisionId();
+    query = lastRevisionId
+      ? `${deltaUrl.indexOf('?') === -1 ? '?' : '&'}revisionId=${lastRevisionId}`
+      : '';
+  }
 
-  const data = await fetch(deltaUrl + deltaBundleId);
+  const data = await fetch(deltaUrl + query);
   const bundle = await data.json();
 
-  const deltaPatcher = client.applyDelta({
-    id: bundle.id,
-    pre: new Map(bundle.pre),
-    post: new Map(bundle.post),
-    delta: new Map(bundle.delta),
-    reset: bundle.reset,
-  });
+  const deltaPatcher = client.applyDelta(bundle);
 
   const cachedBundle = cachedBundleUrls.get(deltaUrl);
 
   // If nothing changed, avoid recreating a bundle blob by reusing the
   // previous one.
   if (deltaPatcher.getLastNumModifiedFiles() === 0 && cachedBundle) {
-    return cachedBundle;
+    return { url: cachedBundle, moduleSize: deltaPatcher.getSizeOfAllModules() };
   }
 
   // Clean up the previous bundle URL to not leak memory.
@@ -56,5 +60,5 @@ export default async function deltaUrlToBlobUrl(deltaUrl) {
   const bundleContents = URL.createObjectURL(blob);
   cachedBundleUrls.set(deltaUrl, bundleContents);
 
-  return bundleContents;
+  return { url: bundleContents, moduleSize: deltaPatcher.getSizeOfAllModules() };
 }

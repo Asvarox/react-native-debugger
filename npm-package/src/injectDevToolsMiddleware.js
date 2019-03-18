@@ -42,6 +42,15 @@ const flags = {
       funcCall: '(host, port, args, true)',
       args: "(host && host.split(':')[1] || '8081') + '&args=' + args",
     },
+    '0.59.0': {
+      target: '@react-native-community/cli',
+      dir: 'build/commands/server/middleware',
+      file: 'getDevToolsMiddleware.js',
+      func: `function ${keyFunc}(port, args = '') {`,
+      replaceFunc: `function ${keyFunc}(port, args = '', skipRNDebugger) {`,
+      funcCall: '(port, args, true)',
+      args: "port + '&args=' + args",
+    },
   },
   'react-native-macos': {
     '0.0.0': {
